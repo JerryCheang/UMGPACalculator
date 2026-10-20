@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f65e8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BIA25 GPA">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>UM BIA25 GPA 預測器</title>
+<style>
+:root{color-scheme:light;--bg:#f3f6fc;--card:#fff;--ink:#18243b;--muted:#6e7b91;--line:#e2e8f2;--accent:#4f65e8;--accent-dark:#3749bd;--soft:#eef1ff;--green:#147d61;--amber:#986b16;--shadow:0 10px 30px rgba(31,48,91,.07);--radius:18px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 10% 0%,rgba(107,129,255,.12),transparent 34%),linear-gradient(180deg,#f7f9ff 0%,var(--bg) 55%,#f5f7fb 100%);color:var(--ink);font:15px/1.6 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+main{max-width:1240px;margin:0 auto;padding:36px 24px 64px}
+h1{font-size:clamp(28px,4vw,42px);line-height:1.15;letter-spacing:-1.2px;margin:0 0 10px;font-weight:850}
+h1:before{content:"GPA PLANNER";display:block;font-size:11px;letter-spacing:2.8px;color:var(--accent);font-weight:800;margin-bottom:12px}
+h2{font-size:19px;letter-spacing:-.25px;margin:0 0 4px;font-weight:800}h3{font-size:16px;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 26px;font-size:14px}
+.notice{background:#fff8e8;border:1px solid #f3dfac;border-radius:14px;padding:15px 18px;margin:16px 0 20px;color:#6f531b;box-shadow:0 4px 14px rgba(115,87,18,.035)}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:22px 0}
+.card{position:relative;background:rgba(255,255,255,.92);border:1px solid rgba(221,228,241,.95);border-radius:var(--radius);padding:20px;min-width:0;box-shadow:var(--shadow);overflow:hidden}
+.card:before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),#8b9bff)}
+.label{color:var(--muted);font-size:12px;font-weight:650;letter-spacing:.2px}.metric{font-size:34px;line-height:1.25;font-weight:850;letter-spacing:-1px;margin:9px 0 8px;color:#202e50;font-variant-numeric:tabular-nums}.metric small{font-size:13px;font-weight:650;color:var(--muted);letter-spacing:0}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0;padding:16px 18px;background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 18px rgba(31,48,91,.035)}.controls label{font-weight:750;font-size:13px;color:#34425f}.controls input{width:100px;padding:10px 12px;border:1px solid #d4dced;border-radius:10px;background:#fbfcff;color:var(--ink);font:inherit;outline:none}.controls input:focus,input.grade:focus,select:focus,.course-custom:focus{border-color:#7b8bf3;box-shadow:0 0 0 3px rgba(79,101,232,.13);outline:none}
+button{border:0;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;padding:10px 16px;border-radius:10px;font:inherit;font-size:13px;font-weight:750;cursor:pointer;box-shadow:0 5px 12px rgba(79,101,232,.2);transition:transform .15s,box-shadow .15s}button:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(79,101,232,.24)}button:active{transform:translateY(0)}button.secondary{background:#edf0f8;color:#35415b;box-shadow:none}button.secondary:hover{background:#e4e9f5;box-shadow:none}button.danger{background:#fff0f0;color:#a12626}
+.semester{margin:18px 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.semhead{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:19px 22px;background:linear-gradient(100deg,#f8f9ff,#fff);border-bottom:1px solid var(--line)}.semhead p{margin:4px 0 0;color:var(--muted);font-size:12px}.semhead>div:last-child{font-size:13px;color:var(--accent-dark);background:#eef1ff;padding:8px 12px;border-radius:10px}.sem-summary{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.sem-gpas{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.sem-gpas span{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid #dfe5ff;border-radius:8px;background:#fff;font-size:11px;color:var(--muted);white-space:nowrap}.sem-gpas b{font-size:13px;color:var(--accent-dark);font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}th,td{text-align:left;padding:13px 16px;border-bottom:1px solid #edf0f6;vertical-align:middle}th{font-size:11px;letter-spacing:.5px;color:#748099;background:#fbfcff;font-weight:800}tr:last-child td{border-bottom:0}tbody tr{transition:background .15s}tbody tr:hover{background:#f8f9ff}.course{font-weight:750;color:#202d49}.detail{font-size:12px;line-height:1.5;color:var(--muted);margin-top:3px;max-width:460px}.credits{text-align:right;white-space:nowrap;font-weight:750;color:#46536d}
+select.grade{width:132px;max-width:100%;padding:9px 10px;border:1px solid #d6deed;border-radius:10px;background:#fff;color:#2b3853;font:inherit;font-size:13px;cursor:pointer}input.grade{width:86px;padding:7px;border:1px solid #cdd3df;border-radius:7px;font:inherit}.course-choice,.course-custom{max-width:100%;width:min(370px,100%);margin-top:9px;padding:10px 12px;border:1px solid #d6deed;border-radius:10px;background:#fff;color:#2b3853;font:inherit;font-size:13px}.course-custom{width:min(300px,100%)}
+.tag{display:inline-block;font-size:10px;letter-spacing:.5px;font-weight:850;padding:5px 9px;border-radius:7px;background:#eef1f7;color:#4a5870}.tag.pnp{background:#f2eaff;color:#7540a5}.tag.ge{background:#e6f7ef;color:#176548}.progress{height:7px;background:#e9edf6;border-radius:99px;overflow:hidden;margin-top:13px}.progress span{display:block;height:100%;background:linear-gradient(90deg,#4f65e8,#8c9aff);width:0;border-radius:99px;transition:width .3s}.foot{color:var(--muted);font-size:12px;line-height:1.8;margin-top:28px;padding:18px 20px;background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:14px}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:26px 16px 44px}}
+@media(max-width:600px){main{padding:22px 12px 36px}h1{font-size:29px}.cards{gap:10px}.card{padding:15px;border-radius:14px}.metric{font-size:27px}.semhead{align-items:flex-start;flex-direction:column;padding:16px}.sem-summary{align-items:flex-start}.sem-gpas{justify-content:flex-start}.controls{padding:14px}.controls label{width:100%}.controls input{flex:1;min-width:80px}.controls button{flex:1}.notice{padding:13px 14px;font-size:13px}th,td{padding:11px 12px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+</style>
+</head>
+<body><main>
+<h1>UM BIA25 GPA 預測器</h1>
+<p class="sub">澳門大學 Business Intelligence and Data Analytics · 2026/27 入學 Study Plan · 4.0 制</p>
+<div class="notice"><strong>請留意：</strong>你目前是大一上、尚未有任何成績。因此「實際 CGPA」會顯示 N/A，而不是 0.00；「預測 CGPA」3.50 是假設值，不是校方成績或實際成績。未出分課程不計入實際 GPA／已取得學分。</div>
+<div class="cards">
+ <div class="card"><div class="label">預測 CGPA</div><div class="metric" id="pred">3.50</div><div class="label">未有成績課程按目標平均 3.50 假設</div></div>
+ <div class="card"><div class="label">實際 CGPA</div><div class="metric" id="actual">N/A</div><div class="label" id="actualSub">目前沒有可計算的正式成績</div></div>
+ <div class="card"><div class="label">已取得學分</div><div class="metric" id="earned">0 <small>/ 120</small></div><div class="progress"><span id="bar"></span></div></div>
+ <div class="card"><div class="label">計入實際 GPA 的學分</div><div class="metric" id="gpaCredits">0</div><div class="label">P／NP 課程不計入 GPA 分母</div></div>
+</div>
+<div class="controls">
+<label for="target">預測平均 GPA 假設（0–4）</label><input id="target" type="number" min="0" max="4" step="0.1" value="3.5">
+<button id="update">更新預測</button><button class="secondary" id="export">匯出 CSV</button><button class="secondary" id="reset">重設成績</button>
+</div>
+<div class="notice" style="background:#eef4ff;border-color:#ccd9ff"><strong>輸入方法：</strong>一般課程在「實際成績」選擇字母等級；系統按以下對照換算 GPA：A=4.0（93–100）、A-=3.7（88–92）、B+=3.3（83–87）、B=3.0（78–82）、B-=2.7（73–77）、C+=2.3（68–72）、C=2.0（63–67）、C-=1.7（58–62）、D+=1.3（53–57）、D=1.0（50–52）、F=0（低於50）。CPED 與 CISC1000 在「實際成績」欄直接選擇 P／NP；P 才累計已取得學分，兩者都不計 GPA。List A／List B RE 可在下拉選單選擇正式 Study Plan 選項；FE 的 Study Plan 沒有列出固定課程名單，因此可自行輸入課程代碼／名稱。</div>
+<div id="semesters"></div>
+<p class="foot">來源：你上傳的 BIA25 AY2026/2027 Study Plan（更新日期 30/07/2026）。Study Plan 列出畢業要求 120 學分。依你的資料，CHLL1000 已免修；大一上不安排語言免修替代選修或其他 Free Elective（已按你的說明移除）；英文按 EELC1013 起修安排。GE 課程 GESB1017、GEST1001、GELH1000 已修讀但尚未出分。List A 官方選項：ACCT1000、BECO1000、BECO1001、FINC2000、ISOM2006、MGMT1000、MGMT2000、MKTG2000（需選三科）；List B 官方選項：ISOM3025、ISOM3031、ISOM3037（需選一科）。FE 課程名單未在此 Study Plan 列明，請以當年可選課程及學院規定核對。學期課程安排為預設追蹤清單，請以實際選課紀錄核對。</p>
+</main>
+<script>
+const semesters = [
+ {name:"大一上 · 2026/27 Semester 1",courses:[
+  ["CPED1000","Residential College Experiential Learning（全年課程）",1,"CM","pnp"],
+  ["CPED1001","Physical Education I",0.5,"CM","pnp"],
+  ["EELC1013","University English III",3,"CM","grade"],
+  ["GEST1001","Quantitative Reasoning for Business",3,"GE","grade"],
+  ["ISOM1005","Introduction to Business Intelligence and Information",3,"CM","grade"],
+  ["GESB1017","Law and Society（你表示大一上已修讀；尚未出分）",3,"GE","grade"],
+  ["GELH1000","Chinese Language and Culture（你表示大一上已修讀；尚未出分）",3,"GE","grade"]
+ ]},
+ {name:"大一下 · 2026/27 Semester 2",courses:[
+  ["CISC1000","Information Technology Fundamentals and Practices",3,"CM","pnp"],
+  ["CPED1002","Physical Education II",0.5,"CM","pnp"],
+  ["E4 Academic English","Academic English: Speaking / Writing / Project-based Learning（三選一）",3,"CM/FE","grade"],
+  ["ISOM1004","Applied Calculus",3,"CM","grade"],
+  ["List A Required Elective 1","Business Foundations（三選一以外的課程清單中選修）",3,"RE","grade"],
+  ["List A Required Elective 2","Business Foundations",3,"RE","grade"]
+ ]},
+ {name:"大二上 · 2027/28 Semester 1",courses:[
+  ["CPED2001","Residential College Community Team",1,"CM","pnp"],
+  ["ISOM2002","Statistics and Data Analysis",3,"CM","grade"],
+  ["ISOM2005","Linear Algebra",3,"CM","grade"],
+  ["ISOM2007","Programming for Business Analytics",3,"CM","grade"],
+  ["ISOM3000","Database Management",3,"CM","grade"],
+  ["自由選修課（Free Elective）","待按實際選課確認",3,"FE","grade"]
+ ]},
+ {name:"大二下 · 2027/28 Semester 2",courses:[
+  ["ISOM3002","Analysis and Design of Information Systems",3,"CM","grade"],
+  ["ISOM3016","Computer Networking for Business",3,"CM","grade"],
+  ["ISOM3028","Advanced Computer Programming",3,"CM","grade"],
+  ["GE 待選課（範疇要求）","已修 GESB1017 / GELH1000 需抵扣相應 GE 要求；核對正式選課紀錄",3,"GE","grade"]
+ ]},
+ {name:"大三上 · 2028/29 Semester 1",courses:[
+  ["ISOM3012","Web Site Design and Internet Business Applications",3,"CM","grade"],
+  ["ISOM3030","Quantitative Decision Analysis",3,"CM","grade"],
+  ["ISOM3036","Cyber Security and Blockchain",3,"CM","grade"],
+  ["ISOM3039","Statistics for Business Applications",3,"CM","grade"],
+  ["List A Required Elective 3","Business Foundations",3,"RE","grade"]
+ ]},
+ {name:"大三下 · 2028/29 Semester 2",courses:[
+  ["ISOM3018","Business Data Mining and Visualization",3,"CM","grade"],
+  ["ISOM3015","Big Data Management",3,"CM","grade"],
+  ["List B Required Elective","Analytics & Technology（三選一）",3,"RE","grade"],
+  ["GE 待選課（範疇要求）","請按尚未完成的 GE 範疇選課",3,"GE","grade"],
+  ["GE 待選課（範疇要求）","請按尚未完成的 GE 範疇選課",3,"GE","grade"]
+ ]},
+ {name:"大四上 · 2029/30 Semester 1",courses:[
+  ["ISOM3035","Operations Management",3,"CM","grade"],
+  ["ISOM4008","Machine Learning for Business Intelligence",3,"CM","grade"],
+  ["GE 待選課（範疇要求）","請按尚未完成的 GE 範疇選課",3,"GE","grade"],
+  ["自由選修課（Free Elective）","待按實際選課確認",3,"FE","grade"]
+ ]},
+ {name:"大四下 · 2029/30 Semester 2",courses:[
+  ["ISOM4005","Business Project Management",3,"CM","grade"],
+  ["ISOM4007","Graduation Project",3,"CM","grade"],
+  ["GE 待選課（範疇要求）","請按尚未完成的 GE 範疇選課",3,"GE","grade"],
+  ["自由選修課（Free Elective）","待按實際選課確認",3,"FE","grade"]
+ ]}
+];
+const root=document.getElementById('semesters');
+const listAOptions = [
+ ["ACCT1000","Principles of Financial Accounting"],
+ ["BECO1000","Principles of Microeconomics"],
+ ["BECO1001","Principles of Macroeconomics"],
+ ["FINC2000","Financial Management"],
+ ["ISOM2006","E-Commerce and M-Commerce Strategies"],
+ ["MGMT1000","Principles of Business Management"],
+ ["MGMT2000","Business Communications"],
+ ["MKTG2000","Principles of Marketing"]
+];
+const listBOptions = [
+ ["ISOM3025","Business Modeling and Simulation"],
+ ["ISOM3031","Forecasting Models in Business"],
+ ["ISOM3037","Internet of Things and Cloud Computing with Business Applications"]
+];
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+semesters.forEach((sem,si)=>{
+ const sec=document.createElement('section');sec.className='semester';
+ const credits=sem.courses.reduce((s,c)=>s+c[2],0);
+ sec.innerHTML=`<div class="semhead"><div><h2>${esc(sem.name)}</h2><p>${sem.courses.length} 個課程／要求項目</p></div><div class="sem-summary"><strong>${credits.toFixed(1).replace(/\.0$/i,'')} 學分（課程列合計）</strong><div class="sem-gpas"><span>實際 GPA <b data-sem-actual="${si}">N/A</b></span><span>預測 GPA <b data-sem-pred="${si}">3.50</b></span></div></div></div><div class="scroll"><table><thead><tr><th>課程</th><th>類別</th><th>學分</th><th>實際成績（一般課程：A 至 F（含 +/-）；P／NP 課程：P 或 NP）</th></tr></thead><tbody></tbody></table></div>`;
+ const tbody=sec.querySelector('tbody');
+ sem.courses.forEach((c,ci)=>{
+  const id=`s${si}c${ci}`; const isPnp=c[4]==='pnp';
+  const tr=document.createElement('tr');tr.dataset.sem=si;tr.dataset.idx=ci;tr.dataset.credits=c[2];tr.dataset.kind=c[4];
+  let courseCell = `<div class="course">${esc(c[0])}</div><div class="detail">${esc(c[1])}</div>`;
+  if(c[0].startsWith('List A Required Elective')){
+   const opts = listAOptions.map(o=>`<option value="${esc(o[0])}">${esc(o[0]+' — '+o[1])}</option>`).join('');
+   courseCell = `<div class="course">List A Required Elective</div><div class="detail">從正式 List A 清單選一科（全學位需選三科）</div><select class="course-choice" data-choice="${id}" data-choice-type="A" aria-label="選擇 List A 課程"><option value="">請選擇 List A 課程</option>${opts}</select>`;
+  } else if(c[0]==='List B Required Elective'){
+   const opts = listBOptions.map(o=>`<option value="${esc(o[0])}">${esc(o[0]+' — '+o[1])}</option>`).join('');
+   courseCell = `<div class="course">List B Required Elective</div><div class="detail">從正式 List B 清單選一科（全學位需選一科）</div><select class="course-choice" data-choice="${id}" data-choice-type="B" aria-label="選擇 List B 課程"><option value="">請選擇 List B 課程</option>${opts}</select>`;
+  } else if(c[0].includes('自由選修課') || c[0].includes('Free Elective')){
+   courseCell = `<div class="course">${esc(c[0])}</div><div class="detail">Study Plan 未列出固定選項；請輸入你打算選修的課程</div><input class="course-custom" data-custom="${id}" aria-label="自由選修課名稱" placeholder="輸入課程代碼／名稱">`;
+  }
+  tr.innerHTML=`<td>${courseCell}</td><td><span class="tag ${c[3]==='GE'?'ge':isPnp?'pnp':''}">${esc(c[3])}</span></td><td class="credits">${c[2]}</td><td><select class="grade" aria-label="${esc(c[0])} 實際成績" data-grade="${id}"><option value="" disabled selected>選擇成績</option>${isPnp?'<option value="P">P（取得學分）</option><option value="NP">NP（不取得學分）</option>':'<option value="A">A（4.0；93–100）</option><option value="A-">A-（3.7；88–92）</option><option value="B+">B+（3.3；83–87）</option><option value="B">B（3.0；78–82）</option><option value="B-">B-（2.7；73–77）</option><option value="C+">C+（2.3；68–72）</option><option value="C">C（2.0；63–67）</option><option value="C-">C-（1.7；58–62）</option><option value="D+">D+（1.3；53–57）</option><option value="D">D（1.0；50–52）</option><option value="F">F（0.0；低於50）</option>'}</select></td>`;
+  tbody.appendChild(tr);
+ });
+ root.appendChild(sec);
+});
+function num(v){if(v===null||v.trim()==='')return null;const points={A:4,"A-":3.7,"B+":3.3,B:3,"B-":2.7,"C+":2.3,C:2,"C-":1.7,"D+":1.3,D:1,F:0};return Object.prototype.hasOwnProperty.call(points,v)?points[v]:null;}
+function calc(){
+ let actualPts=0,actualCredits=0,earned=0,projectedPts=0,projectedCredits=0;
+ const perSemester=semesters.map(()=>({actualPts:0,actualCredits:0,predPts:0,predCredits:0}));
+ const targetRaw=Number(document.getElementById('target').value);
+ const target=Number.isFinite(targetRaw)?Math.min(4,Math.max(0,targetRaw)):3.5;
+ document.querySelectorAll('tr[data-kind]').forEach(tr=>{
+  const cr=Number(tr.dataset.credits),kind=tr.dataset.kind,si=Number(tr.dataset.sem);
+  const input=tr.querySelector('select.grade');
+  if(kind==='pnp'){if(input.value==='P')earned+=cr;return;}
+  const g=num(input.value),bucket=perSemester[si];
+  if(g!==null){actualPts+=g*cr;actualCredits+=cr;earned+=cr;projectedPts+=g*cr;projectedCredits+=cr;bucket.actualPts+=g*cr;bucket.actualCredits+=cr;bucket.predPts+=g*cr;bucket.predCredits+=cr;}
+  else {projectedPts+=target*cr;projectedCredits+=cr;bucket.predPts+=target*cr;bucket.predCredits+=cr;}
+ });
+ perSemester.forEach((x,si)=>{
+  const a=document.querySelector(`[data-sem-actual="${si}"]`),p=document.querySelector(`[data-sem-pred="${si}"]`);
+  if(a)a.textContent=x.actualCredits?(x.actualPts/x.actualCredits).toFixed(2):'N/A';
+  if(p)p.textContent=x.predCredits?(x.predPts/x.predCredits).toFixed(2):'N/A';
+ });
+ document.getElementById('pred').textContent=projectedCredits? (projectedPts/projectedCredits).toFixed(2):'N/A';
+ document.getElementById('actual').textContent=actualCredits?(actualPts/actualCredits).toFixed(2):'N/A';
+ document.getElementById('actualSub').textContent=actualCredits?`${actualCredits.toFixed(1).replace(/\.0$/,'')} 個 GPA 學分已有成績`:'目前沒有可計算的正式成績';
+ document.getElementById('earned').innerHTML=`${earned.toFixed(1).replace(/\.0$/,'')} <small>/ 120</small>`;
+ document.getElementById('gpaCredits').textContent=actualCredits.toFixed(1).replace(/\.0$/,'');
+ document.getElementById('bar').style.width=Math.min(100,earned/120*100)+'%';
+}
+document.querySelectorAll('select.grade').forEach(el=>el.addEventListener('change',calc));
+document.querySelectorAll('.course-choice').forEach(el=>el.addEventListener('change',()=>{
+ const tr=el.closest('tr'); const title=tr.querySelector('.course'); if(title) title.textContent=el.value ? (el.dataset.choiceType==='A'?'List A — ':'List B — ')+el.value : (el.dataset.choiceType==='A'?'List A Required Elective':'List B Required Elective');
+}));
+
+document.getElementById('target').addEventListener('input',calc);
+document.getElementById('update').addEventListener('click',calc);
+document.getElementById('reset').addEventListener('click',()=>{document.querySelectorAll('select.grade').forEach(x=>x.value='');document.getElementById('target').value='3.5';calc();});
+document.getElementById('export').addEventListener('click',()=>{
+ const rows=[['Semester','Course','Description','Credits','Type','Actual grade']];
+ semesters.forEach((s,si)=>s.courses.forEach((c,ci)=>{
+  const id=`s${si}c${ci}`;const g=document.querySelector(`[data-grade="${id}"]`);
+  const choice=document.querySelector(`[data-choice="${id}"]`);const custom=document.querySelector(`[data-custom="${id}"]`);
+  const chosen=choice&&choice.value?choice.value:(custom&&custom.value?custom.value:c[0]);
+  const gradePoints={A:4,"A-":3.7,"B+":3.3,B:3,"B-":2.7,"C+":2.3,C:2,"C-":1.7,"D+":1.3,D:1,F:0}; const gradeValue=g&&g.value?g.value:''; const actual=gradeValue==='P'?'P（取得學分）':gradeValue==='NP'?'NP（不取得學分）':gradeValue?`${gradeValue} (${gradePoints[gradeValue].toFixed(1)})`:''; rows.push([s.name,chosen,c[1],c[2],c[3],actual]);
+ }));
+ const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='UM_BIA25_GPA_Tracker.csv';a.click();URL.revokeObjectURL(a.href);
+});
+// 自動儲存成績與選課文字，方便下次在同一裝置繼續使用
+const STORAGE_KEY='um-bia25-gpa-pwa-v1';
+function saveState(){
+ try {
+  const state={target:document.getElementById('target').value,grades:{},custom:{},choices:{}};
+  document.querySelectorAll('select.grade').forEach(el=>state.grades[el.dataset.grade]=el.value);
+  document.querySelectorAll('[data-custom]').forEach(el=>state.custom[el.dataset.custom]=el.value);
+  document.querySelectorAll('[data-choice]').forEach(el=>state.choices[el.dataset.choice]=el.value);
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+ } catch(e) {}
+}
+function loadState(){
+ try {
+  const state=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); if(!state)return;
+  if(state.target!==undefined)document.getElementById('target').value=state.target;
+  Object.entries(state.grades||{}).forEach(([id,v])=>{const el=document.querySelector(`[data-grade="${id}"]`);if(el)el.value=v;});
+  Object.entries(state.custom||{}).forEach(([id,v])=>{const el=document.querySelector(`[data-custom="${id}"]`);if(el)el.value=v;});
+  Object.entries(state.choices||{}).forEach(([id,v])=>{const el=document.querySelector(`[data-choice="${id}"]`);if(el)el.value=v;});
+ } catch(e) {}
+}
+document.querySelectorAll('select.grade, #target, [data-custom], [data-choice]').forEach(el=>{el.addEventListener('change',saveState);el.addEventListener('input',saveState);});
+document.getElementById('reset').addEventListener('click',saveState);
+const originalCalc=calc;
+// Also save after reset or any recalculation triggered by the controls.
+loadState();
+calc();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+</script></body></html>
